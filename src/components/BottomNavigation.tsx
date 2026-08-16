@@ -60,7 +60,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white/95 dark:bg-[#1E1A17]/95 backdrop-blur-md border-t border-[#EBE6DD] dark:border-[#3D322B] shadow-2xl px-2 py-1.5 transition-colors duration-300"
+      className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white/95 dark:bg-[#1E1A17]/95 backdrop-blur-md border-t border-[#EBE6DD] dark:border-[#3D322B] shadow-2xl px-2 pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] transition-colors duration-300"
       aria-label="Navegación rápida inferior"
     >
       <div className="max-w-md mx-auto grid grid-cols-3 items-center">

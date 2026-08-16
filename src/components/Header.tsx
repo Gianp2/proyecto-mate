@@ -239,7 +239,7 @@ export const Header: React.FC<HeaderProps> = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="p-6 border-t border-[#2C221E]/10 dark:border-[#3D322B] bg-white/40 dark:bg-[#1A1614]/60 space-y-3"
+              className="p-6 border-t border-[#2C221E]/10 dark:border-[#3D322B] bg-[#FAF8F5]/80 dark:bg-[#1A1614]/80 space-y-3"
             >
               <a
                 href={whatsappUrl}
