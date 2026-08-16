@@ -1,0 +1,6 @@
+{
+  "name": "Pampa Mates & Yerbas",
+  "description": "Catálogo exclusivo de mates artesanales, yerbas, bombillas y accesorios con consulta directa por WhatsApp y panel de gestión.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

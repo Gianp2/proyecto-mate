@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="100" fill="#4B5A36"/>
+  <!-- Inner Background Circle -->
+  <circle cx="256" cy="256" r="200" fill="#FAF8F5"/>
+  
+  <!-- Mate Gourd Body -->
+  <path d="M160 240 C 140 370, 372 370, 352 240 C 346 215, 325 200, 256 200 C 187 200, 166 215, 160 240 Z" fill="#2C221E"/>
+  
+  <!-- Virola (Alpaca Ring) -->
+  <path d="M 160 220 C 160 190, 352 190, 352 220 L 342 235 C 342 218, 170 218, 170 235 Z" fill="#C5BAA8"/>
+  <ellipse cx="256" cy="204" rx="90" ry="18" fill="#E2DAD0" stroke="#8C7F70" stroke-width="4"/>
+  
+  <!-- Yerba Fill -->
+  <ellipse cx="256" cy="204" rx="76" ry="11" fill="#3D4A2B"/>
+  
+  <!-- Bombilla -->
+  <path d="M 292 200 L 380 84 M 380 84 L 396 100" stroke="#D8CFC4" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="390" cy="92" r="14" fill="#8C7F70"/>
+  
+  <!-- PAMPA Text -->
+  <text x="256" y="432" font-family="'Playfair Display', serif" font-size="52" font-weight="bold" fill="#4B5A36" text-anchor="middle" letter-spacing="8">PAMPA</text>
+</svg>

@@ -1,0 +1,40 @@
+{
+  "name": "Pampa Mates & Yerbas",
+  "short_name": "PAMPA Mates",
+  "description": "Catálogo exclusivo de mates artesanales, yerbas, bombillas y accesorios. Consultá directo por WhatsApp.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#FAF8F5",
+  "theme_color": "#4B5A36",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es",
+  "categories": ["shopping", "lifestyle", "food"],
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
