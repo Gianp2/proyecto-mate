@@ -8,7 +8,7 @@ interface AdminLoginProps {
 }
 
 export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onReturnToStore }) => {
-  const [username, setUsername] = useState('admin');
+  const [username, setUsername] = useState('mates@admin.com');
   const [password, setPassword] = useState('admin123');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -34,8 +34,8 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onReturn
     }
   };
 
-  const handleFillCredentials = (pass: string = 'admin123') => {
-    setUsername('admin');
+  const handleFillCredentials = (user: string = 'mates@admin.com', pass: string = 'admin123') => {
+    setUsername(user);
     setPassword(pass);
     setError('');
   };
@@ -119,13 +119,13 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onReturn
             {/* Quick Fill Credentials Banner */}
             <div className="p-3 rounded-xl bg-[#FAF8F5] dark:bg-[#1E1A17] border border-[#EBE6DD] dark:border-[#3D322B] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="text-[11px] text-[#7C6E65] dark:text-[#A39489]">
-                <span>Usuario: <strong className="text-[#2C221E] dark:text-[#F4EFEA]">admin</strong></span>
+                <span>Usuario: <strong className="text-[#2C221E] dark:text-[#F4EFEA]">mates@admin.com</strong></span>
                 <span className="mx-1.5">·</span>
                 <span>Clave: <strong className="text-[#2C221E] dark:text-[#F4EFEA]">admin123</strong></span>
               </div>
               <button
                 type="button"
-                onClick={() => handleFillCredentials('admin123')}
+                onClick={() => handleFillCredentials('mates@admin.com', 'admin123')}
                 className="px-2.5 py-1 rounded-lg bg-[#4B5A36]/10 dark:bg-[#809761]/20 text-[#4B5A36] dark:text-[#809761] hover:bg-[#4B5A36]/20 font-bold text-[10px] inline-flex items-center gap-1 self-start sm:self-auto cursor-pointer transition-colors"
               >
                 <KeyRound className="w-3 h-3" />
