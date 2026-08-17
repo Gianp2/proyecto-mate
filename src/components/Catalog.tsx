@@ -37,8 +37,7 @@ export const Catalog: React.FC<CatalogProps> = ({ products, settings, onSelectPr
 
         return matchCategory && matchSearch;
       })
-      .sort((a, b) => {
-        if (sortBy === 'price-asc') return a.price - b.price;
+.sort((a: Product, b: Product) => {        if (sortBy === 'price-asc') return a.price - b.price;
         if (sortBy === 'price-desc') return b.price - a.price;
         if (sortBy === 'name') return a.name.localeCompare(b.name);
         return a.order - b.order;
