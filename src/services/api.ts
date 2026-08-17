@@ -375,6 +375,7 @@ export async function loginAdmin(username: string, password: string): Promise<{ 
       throw new Error(err.error || 'Credenciales incorrectas');
     }
   } catch (err: any) {
+    // If backend returns a business error (e.g., 401 Credenciales incorrectas), propagate it
     if (err.message && err.message !== 'Failed to fetch' && !err.message.includes('fetch')) {
       throw err;
     }

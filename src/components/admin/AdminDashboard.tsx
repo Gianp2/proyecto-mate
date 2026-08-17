@@ -196,6 +196,30 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
+  // Quick Stock Adjustment (+ / -) directly from mobile cards
+  const handleQuickStockChange = async (product: Product, delta: number) => {
+    const currentQty = product.stockQuantity ?? 10;
+    const newQty = Math.max(0, currentQty + delta);
+    let newStatus: StockStatus = product.stockStatus || 'Disponible';
+    if (newQty === 0) newStatus = 'Agotado';
+    else if (newQty < 3) newStatus = 'Últimas unidades';
+    else if (newStatus === 'Agotado' || newStatus === 'Últimas unidades') newStatus = 'Disponible';
+
+    // Optimistic UI update
+    setProducts(prev =>
+      prev.map(p => (p.id === product.id ? { ...p, stockQuantity: newQty, stockStatus: newStatus } : p))
+    );
+
+    try {
+      const updated = await updateProduct(product.id, { stockQuantity: newQty, stockStatus: newStatus });
+      setProducts(prev => prev.map(p => (p.id === updated.id ? updated : p)));
+    } catch (err: any) {
+      // Rollback on error
+      setProducts(prev => prev.map(p => (p.id === product.id ? product : p)));
+      alert(err.message || 'Error al actualizar stock');
+    }
+  };
+
   // Open modal for Create or Edit
   const handleOpenProductModal = (product?: Product) => {
     if (product) {
@@ -298,12 +322,57 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   return (
     <div className="min-h-screen bg-[#FAF8F5] dark:bg-[#181412] text-[#2C221E] dark:text-[#F4EFEA] flex flex-col md:flex-row transition-colors duration-300">
       {/* Sidebar Navigation (Desktop) / Header Tabs (Mobile) */}
-      <aside className="w-full md:w-64 bg-white dark:bg-[#241E1B] border-r border-[#EBE6DD] dark:border-[#3D322B] shrink-0 p-4 flex flex-col justify-between transition-colors duration-300">
+      {/* Mobile Top Header */}
+      <div className="md:hidden sticky top-0 z-30 bg-white/95 dark:bg-[#241E1B]/95 backdrop-blur-md border-b border-[#EBE6DD] dark:border-[#3D322B] px-4 py-3 flex items-center justify-between shadow-2xs">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] flex items-center justify-center font-serif-title font-bold text-sm shadow-xs">
+            P
+          </div>
+          <div>
+            <span className="font-serif-title font-bold text-sm text-[#2C221E] dark:text-[#F4EFEA] block leading-none">
+              PAMPA ADMIN
+            </span>
+            <span className="text-[10px] text-[#7C6E65] dark:text-[#A39489] font-medium">Panel de Control</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <button
+            onClick={handleToggleDark}
+            className="p-2 rounded-xl text-[#7C6E65] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622] transition-colors cursor-pointer"
+            title={isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+            aria-label="Cambiar tema"
+          >
+            {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#4B5A36]" />}
+          </button>
+
+          <button
+            onClick={onReturnToStore}
+            className="p-2 rounded-xl text-[#7C6E65] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622] hover:text-[#2C221E] dark:hover:text-[#F4EFEA] transition-colors cursor-pointer"
+            title="Volver a la tienda"
+            aria-label="Volver a la tienda"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={handleLogout}
+            className="p-2 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+            title="Cerrar sesión"
+            aria-label="Cerrar sesión"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop Sidebar Navigation */}
+      <aside className="hidden md:flex w-64 bg-white dark:bg-[#241E1B] border-r border-[#EBE6DD] dark:border-[#3D322B] shrink-0 p-5 flex-col justify-between transition-colors duration-300">
         <div className="space-y-6">
           {/* Admin Header */}
           <div className="flex items-center justify-between pb-4 border-b border-[#EBE6DD] dark:border-[#3D322B]">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] flex items-center justify-center font-serif-title font-bold text-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] flex items-center justify-center font-serif-title font-bold text-lg shadow-sm">
                 P
               </div>
               <div>
@@ -313,32 +382,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <span className="text-[10px] text-[#7C6E65] dark:text-[#A39489] font-medium">Gestión de Tienda</span>
               </div>
             </div>
-
-            <div className="flex items-center gap-1">
-              {/* Mobile Light/Dark Mode Toggle */}
-              <button
-                onClick={handleToggleDark}
-                className="p-2 rounded-xl text-[#7C6E65] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622] transition-colors cursor-pointer"
-                title={isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-              >
-                {isDarkMode ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-[#4B5A36]" />}
-              </button>
-
-              <button
-                onClick={onReturnToStore}
-                className="md:hidden p-2 text-[#7C6E65] dark:text-[#A39489] hover:text-[#2C221E] dark:hover:text-[#F4EFEA]"
-                title="Ir a la tienda"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-            </div>
           </div>
 
-          {/* Nav Tabs */}
-          <nav className="flex md:flex-col gap-2 overflow-x-auto no-scrollbar">
+          {/* Desktop Nav Tabs */}
+          <nav className="flex flex-col gap-2">
             <button
               onClick={() => setActiveTab('products')}
-              className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all shrink-0 cursor-pointer ${
+              className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'products'
                   ? 'bg-[#4B5A36] text-white shadow-xs'
                   : 'text-[#5C4F48] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622]'
@@ -365,7 +415,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             <button
               onClick={() => setActiveTab('analytics')}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all shrink-0 cursor-pointer ${
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'analytics'
                   ? 'bg-[#4B5A36] text-white shadow-xs'
                   : 'text-[#5C4F48] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622]'
@@ -377,7 +427,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             <button
               onClick={() => setActiveTab('settings')}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all shrink-0 cursor-pointer ${
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'settings'
                   ? 'bg-[#4B5A36] text-white shadow-xs'
                   : 'text-[#5C4F48] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622]'
@@ -389,9 +439,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </nav>
         </div>
 
-        {/* Sidebar Footer */}
-        <div className="pt-4 border-t border-[#EBE6DD] dark:border-[#3D322B] hidden md:block space-y-2">
-          {/* Desktop Light / Dark Mode Toggle Button */}
+        {/* Desktop Sidebar Footer */}
+        <div className="pt-4 border-t border-[#EBE6DD] dark:border-[#3D322B] space-y-2">
           <button
             onClick={handleToggleDark}
             className="w-full flex items-center justify-between bg-[#FAF8F5] dark:bg-[#1E1A17] hover:bg-[#EFECE6] dark:hover:bg-[#2A231F] text-[#2C221E] dark:text-[#F4EFEA] border border-[#EBE6DD] dark:border-[#3D322B] font-semibold text-xs py-2.5 px-3 rounded-xl transition-all cursor-pointer"
@@ -428,26 +477,32 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+      <main className="flex-1 p-3.5 sm:p-6 lg:p-8 pb-24 md:pb-8 overflow-y-auto">
         {/* TAB 1: PRODUCTS CRUD */}
         {activeTab === 'products' && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-4 sm:space-y-6">
+            {/* Header Title + Action Button */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
               <div>
-                <h1 className="font-serif-title text-2xl sm:text-3xl font-bold text-[#2C221E] dark:text-[#F4EFEA]">
-                  Catálogo de Productos
-                </h1>
-                <p className="text-xs sm:text-sm text-[#7C6E65] dark:text-[#A39489]">
+                <div className="flex items-center gap-2">
+                  <h1 className="font-serif-title text-2xl sm:text-3xl font-bold text-[#2C221E] dark:text-[#F4EFEA]">
+                    Catálogo de Productos
+                  </h1>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#EFECE6] dark:bg-[#382F2A] text-[#5C4F48] dark:text-[#C5BBB4]">
+                    {products.length} {products.length === 1 ? 'ítem' : 'ítems'}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-[#7C6E65] dark:text-[#A39489] mt-0.5">
                   Creá, editá y gestioná la disponibilidad de tus mates y accesorios.
                 </p>
               </div>
 
               <button
                 onClick={() => handleOpenProductModal()}
-                className="inline-flex items-center justify-center gap-2 bg-[#4B5A36] hover:bg-[#3A4729] dark:bg-[#809761] dark:hover:bg-[#6b824e] text-white dark:text-[#181412] font-semibold text-xs sm:text-sm px-5 py-3 rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer shrink-0"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#4B5A36] hover:bg-[#3A4729] dark:bg-[#809761] dark:hover:bg-[#6b824e] text-white dark:text-[#181412] font-semibold text-xs sm:text-sm px-5 py-3 rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer shrink-0 min-h-[44px]"
               >
                 <Plus className="w-4 h-4" />
-                <span>Agregar producto</span>
+                <span>Agregar nuevo producto</span>
               </button>
             </div>
 
@@ -475,7 +530,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={() => setOnlyLowStockFilter(!onlyLowStockFilter)}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    className={`w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 min-h-[44px] sm:min-h-0 ${
                       onlyLowStockFilter
                         ? 'bg-amber-700 dark:bg-amber-600 text-white shadow-xs'
                         : 'bg-white dark:bg-[#1E1A17] text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/50'
@@ -488,54 +543,254 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
             )}
 
-            {/* Filters Bar */}
-            <div className="flex flex-col sm:flex-row gap-3 bg-white dark:bg-[#241E1B] p-3.5 rounded-2xl border border-[#EBE6DD] dark:border-[#3D322B]">
-              <div className="relative flex-1">
+            {/* Filters Bar: Search & Category Chips */}
+            <div className="space-y-3 bg-white dark:bg-[#241E1B] p-3.5 rounded-2xl border border-[#EBE6DD] dark:border-[#3D322B] shadow-2xs">
+              <div className="relative w-full">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#9C8F87] dark:text-[#7C6E65]" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Buscar por nombre o categoría..."
-                  className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl bg-[#FAF8F5] dark:bg-[#1E1A17] border border-[#EBE6DD] dark:border-[#3D322B] text-[#2C221E] dark:text-[#F4EFEA] focus:outline-none focus:border-[#4B5A36] dark:focus:border-[#809761]"
+                  placeholder="Buscar por nombre, subtítulo o categoría..."
+                  className="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm rounded-xl bg-[#FAF8F5] dark:bg-[#1E1A17] border border-[#EBE6DD] dark:border-[#3D322B] text-[#2C221E] dark:text-[#F4EFEA] focus:outline-none focus:border-[#4B5A36] dark:focus:border-[#809761]"
                 />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-[#7C6E65] hover:bg-[#EFECE6] dark:hover:bg-[#2E2622]"
+                    title="Limpiar búsqueda"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
 
-              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+              {/* Horizontal Category & Stock Filter Chips */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
                 <button
-                  onClick={() => setOnlyLowStockFilter(!onlyLowStockFilter)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 cursor-pointer flex items-center gap-1.5 transition-all ${
-                    onlyLowStockFilter
-                      ? 'bg-amber-600 text-white shadow-xs'
-                      : lowStockProducts.length > 0
-                      ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800/60'
-                      : 'bg-[#FAF8F5] dark:bg-[#1E1A17] text-[#7C6E65] dark:text-[#A39489] border border-[#EBE6DD] dark:border-[#3D322B]'
+                  onClick={() => {
+                    setCategoryFilter('Todos');
+                    setOnlyLowStockFilter(false);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 cursor-pointer transition-all min-h-[38px] flex items-center gap-1.5 ${
+                    categoryFilter === 'Todos' && !onlyLowStockFilter
+                      ? 'bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] font-bold shadow-xs'
+                      : 'bg-[#FAF8F5] dark:bg-[#1E1A17] text-[#5C4F48] dark:text-[#A39489] hover:bg-[#EFECE6] dark:hover:bg-[#2E2622] border border-[#EBE6DD] dark:border-[#3D322B]'
                   }`}
                 >
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                  <span>Stock Bajo (&lt; 3) ({lowStockProducts.length})</span>
+                  <span>Todos</span>
+                  <span className="opacity-70 text-[10px]">({products.length})</span>
                 </button>
 
-                {['Todos', 'Mates', 'Yerbas', 'Bombillas', 'Termos', 'Accesorios'].map((cat) => (
+                {(['Mates', 'Yerbas', 'Bombillas', 'Termos', 'Accesorios'] as Category[]).map((cat) => {
+                  const count = products.filter((p) => p.category === cat).length;
+                  const isSelected = categoryFilter === cat && !onlyLowStockFilter;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => {
+                        setCategoryFilter(cat);
+                        setOnlyLowStockFilter(false);
+                      }}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 cursor-pointer transition-all min-h-[38px] flex items-center gap-1.5 ${
+                        isSelected
+                          ? 'bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] font-bold shadow-xs'
+                          : 'bg-[#FAF8F5] dark:bg-[#1E1A17] text-[#5C4F48] dark:text-[#A39489] hover:bg-[#EFECE6] dark:hover:bg-[#2E2622] border border-[#EBE6DD] dark:border-[#3D322B]'
+                      }`}
+                    >
+                      <span>{cat}</span>
+                      <span className="opacity-70 text-[10px]">({count})</span>
+                    </button>
+                  );
+                })}
+
+                {lowStockProducts.length > 0 && (
                   <button
-                    key={cat}
-                    onClick={() => {
-                      setCategoryFilter(cat);
-                    }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 cursor-pointer transition-colors ${
-                      categoryFilter === cat && !onlyLowStockFilter
-                        ? 'bg-[#4B5A36] text-white'
-                        : 'bg-[#FAF8F5] dark:bg-[#1E1A17] text-[#5C4F48] dark:text-[#A39489] hover:bg-[#EFECE6] dark:hover:bg-[#2E2622]'
+                    onClick={() => setOnlyLowStockFilter(!onlyLowStockFilter)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 cursor-pointer flex items-center gap-1.5 min-h-[38px] transition-all ${
+                      onlyLowStockFilter
+                        ? 'bg-amber-600 text-white shadow-xs'
+                        : 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800/60'
                     }`}
                   >
-                    {cat}
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                    <span>Críticos ({lowStockProducts.length})</span>
                   </button>
-                ))}
+                )}
               </div>
             </div>
 
-            {/* Products Table / Cards */}
-            <div className="bg-white dark:bg-[#241E1B] rounded-2xl border border-[#EBE6DD] dark:border-[#3D322B] overflow-hidden shadow-2xs">
+            {/* Products Table (Desktop) & Cards (Mobile) */}
+            {/* Mobile Card List */}
+            <div className="md:hidden space-y-3">
+              {filteredProducts.length === 0 ? (
+                <div className="p-8 text-center bg-white dark:bg-[#241E1B] rounded-2xl border border-[#EBE6DD] dark:border-[#3D322B] space-y-2">
+                  <Package className="w-8 h-8 text-[#9C8F87] dark:text-[#7C6E65] mx-auto opacity-60" />
+                  <p className="text-sm font-bold text-[#2C221E] dark:text-[#F4EFEA]">No se encontraron productos</p>
+                  <p className="text-xs text-[#7C6E65] dark:text-[#A39489]">Probá ajustando la búsqueda o filtros de categoría.</p>
+                </div>
+              ) : (
+                filteredProducts.map((p) => {
+                  const isLow = isLowStockProduct(p);
+                  const isOut = p.stockStatus === 'Agotado' || p.stockQuantity === 0;
+
+                  return (
+                    <div
+                      key={p.id}
+                      className={`p-3.5 rounded-2xl border transition-all space-y-3 bg-white dark:bg-[#241E1B] shadow-2xs ${
+                        isOut
+                          ? 'border-rose-300 dark:border-rose-900/60'
+                          : isLow
+                          ? 'border-amber-300 dark:border-amber-900/60'
+                          : 'border-[#EBE6DD] dark:border-[#3D322B]'
+                      }`}
+                    >
+                      {/* Product Top Header: Image, Title, Price, Status */}
+                      <div className="flex items-start gap-3">
+                        <div className="w-16 h-16 rounded-xl overflow-hidden border border-[#EBE6DD] dark:border-[#3D322B] shrink-0 relative bg-[#FAF8F5] dark:bg-[#1E1A17]">
+                          <OptimizedImage
+                            src={p.image}
+                            alt={p.name}
+                            aspectRatio="square"
+                            sizes="64px"
+                          />
+                          {p.featured && (
+                            <span className="absolute top-1 left-1 bg-amber-500 text-white p-0.5 rounded-md shadow-xs" title="Destacado">
+                              <Star className="w-2.5 h-2.5 fill-white" />
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#FAF8F5] dark:bg-[#1E1A17] text-[#5C4F48] dark:text-[#A39489] border border-[#EBE6DD] dark:border-[#3D322B]">
+                              {p.category}
+                            </span>
+                            <span className="font-serif-title font-bold text-base text-[#2C221E] dark:text-[#F4EFEA]">
+                              ${p.price.toLocaleString('es-AR')}
+                            </span>
+                          </div>
+
+                          <h3 className="font-bold text-sm text-[#2C221E] dark:text-[#F4EFEA] mt-1 line-clamp-1">
+                            {p.name}
+                          </h3>
+
+                          {p.subtitle && (
+                            <p className="text-[11px] text-[#7C6E65] dark:text-[#A39489] line-clamp-1">
+                              {p.subtitle}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Stock Management Bar with Quick Stepper */}
+                      <div className="p-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#1E1A17] border border-[#EBE6DD] dark:border-[#3D322B] flex items-center justify-between gap-2">
+                        {/* Status Label */}
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span
+                            className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                              isOut
+                                ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300'
+                                : isLow
+                                ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300'
+                                : 'bg-[#EFECE6] dark:bg-[#382F2A] text-[#2C221E] dark:text-[#F4EFEA]'
+                            }`}
+                          >
+                            {p.stockStatus}
+                          </span>
+                          {isLow && (
+                            <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400">
+                              ⚠️ Reponer
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Quick Stock Stepper Control */}
+                        <div className="flex items-center gap-1 bg-white dark:bg-[#241E1B] p-0.5 rounded-lg border border-[#EBE6DD] dark:border-[#3D322B]">
+                          <button
+                            onClick={() => handleQuickStockChange(p, -1)}
+                            disabled={p.stockQuantity === 0}
+                            className="w-7 h-7 rounded-md bg-[#FAF8F5] dark:bg-[#1E1A17] hover:bg-[#EFECE6] dark:hover:bg-[#2E2622] text-[#2C221E] dark:text-[#F4EFEA] font-bold text-xs flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                            title="Disminuir stock (-1)"
+                            aria-label="Disminuir stock"
+                          >
+                            -
+                          </button>
+                          <span className="px-2 font-mono font-bold text-xs text-[#2C221E] dark:text-[#F4EFEA] min-w-[28px] text-center">
+                            {p.stockQuantity ?? 10}
+                          </span>
+                          <button
+                            onClick={() => handleQuickStockChange(p, 1)}
+                            className="w-7 h-7 rounded-md bg-[#FAF8F5] dark:bg-[#1E1A17] hover:bg-[#EFECE6] dark:hover:bg-[#2E2622] text-[#2C221E] dark:text-[#F4EFEA] font-bold text-xs flex items-center justify-center cursor-pointer transition-colors"
+                            title="Aumentar stock (+1)"
+                            aria-label="Aumentar stock"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Touch Action Buttons for Mobile */}
+                      <div className="grid grid-cols-4 gap-2 pt-1 border-t border-[#EBE6DD]/60 dark:border-[#3D322B]/60">
+                        {/* Edit Button */}
+                        <button
+                          onClick={() => handleOpenProductModal(p)}
+                          className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-[#FAF8F5] dark:bg-[#1E1A17] hover:bg-[#EFECE6] dark:hover:bg-[#2E2622] text-[#2C221E] dark:text-[#F4EFEA] border border-[#EBE6DD] dark:border-[#3D322B] transition-colors cursor-pointer min-h-[44px]"
+                          title="Editar"
+                        >
+                          <Edit2 className="w-4 h-4 text-[#4B5A36] dark:text-[#809761]" />
+                          <span className="text-[10px] font-bold mt-0.5">Editar</span>
+                        </button>
+
+                        {/* Visibility Toggle */}
+                        <button
+                          onClick={() => handleToggleActive(p)}
+                          className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl border transition-colors cursor-pointer min-h-[44px] ${
+                            p.active
+                              ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/80'
+                              : 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800/80'
+                          }`}
+                          title="Visibilidad"
+                        >
+                          {p.active ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                          <span className="text-[10px] font-bold mt-0.5">{p.active ? 'Activo' : 'Oculto'}</span>
+                        </button>
+
+                        {/* Featured Toggle */}
+                        <button
+                          onClick={() => handleToggleFeatured(p)}
+                          className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl border transition-colors cursor-pointer min-h-[44px] ${
+                            p.featured
+                              ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800/80'
+                              : 'bg-[#FAF8F5] dark:bg-[#1E1A17] text-[#7C6E65] dark:text-[#A39489] border-[#EBE6DD] dark:border-[#3D322B]'
+                          }`}
+                          title="Destacado"
+                        >
+                          <Star className={`w-4 h-4 ${p.featured ? 'fill-amber-400 text-amber-500' : ''}`} />
+                          <span className="text-[10px] font-bold mt-0.5">{p.featured ? 'Destacado' : 'Normal'}</span>
+                        </button>
+
+                        {/* Delete Button */}
+                        <button
+                          onClick={() => {
+                            setDeletingProductId(p.id);
+                            setDeletingProductName(p.name);
+                          }}
+                          className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60 transition-colors cursor-pointer min-h-[44px]"
+                          title="Eliminar"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span className="text-[10px] font-bold mt-0.5">Eliminar</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Products Table (Desktop View Only) */}
+            <div className="hidden md:block bg-white dark:bg-[#241E1B] rounded-2xl border border-[#EBE6DD] dark:border-[#3D322B] overflow-hidden shadow-2xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs sm:text-sm">
                   <thead>
@@ -1277,21 +1532,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </label>
               </div>
 
-              <div className="pt-4 border-t border-[#EBE6DD] dark:border-[#3D322B] flex justify-end gap-3">
+              <div className="pt-4 border-t border-[#EBE6DD] dark:border-[#3D322B] flex flex-col-reverse sm:flex-row justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl bg-white dark:bg-[#1E1A17] border border-[#EBE6DD] dark:border-[#3D322B] text-xs font-bold text-[#5C4F48] dark:text-[#A39489]"
+                  className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white dark:bg-[#1E1A17] hover:bg-[#FAF8F5] dark:hover:bg-[#28211D] border border-[#EBE6DD] dark:border-[#3D322B] text-xs font-bold text-[#5C4F48] dark:text-[#A39489] transition-colors cursor-pointer min-h-[44px]"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={savingProduct}
-                  className="px-6 py-2.5 rounded-xl bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] text-xs font-bold flex items-center gap-2"
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#4B5A36] dark:bg-[#809761] hover:bg-[#3A4729] dark:hover:bg-[#6b824e] text-white dark:text-[#181412] text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer min-h-[44px]"
                 >
                   {savingProduct ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  <span>Guardar Producto</span>
+                  <span>{editingProduct.id ? 'Guardar Cambios' : 'Crear Producto'}</span>
                 </button>
               </div>
             </form>
@@ -1302,27 +1557,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {/* Delete Confirmation Modal */}
       {deletingProductId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#181412] rounded-2xl p-6 border border-[#EBE6DD] dark:border-[#3D322B] shadow-xl max-w-sm w-full space-y-4 text-center">
-            <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950/70 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
+          <div className="bg-white dark:bg-[#181412] rounded-3xl p-6 border border-[#EBE6DD] dark:border-[#3D322B] shadow-xl max-w-sm w-full space-y-4 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950/70 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
               <AlertTriangle className="w-6 h-6" />
             </div>
             <h3 className="font-serif-title font-bold text-lg text-[#2C221E] dark:text-[#F4EFEA]">
               ¿Eliminar producto?
             </h3>
-            <p className="text-xs text-[#7C6E65] dark:text-[#A39489]">
+            <p className="text-xs text-[#7C6E65] dark:text-[#A39489] leading-relaxed">
               ¿Estás seguro de que querés eliminar &quot;{deletingProductName}&quot;? Esta acción no se puede deshacer.
             </p>
             <div className="flex items-center gap-3 pt-2">
               <button
                 onClick={() => setDeletingProductId(null)}
-                className="flex-1 py-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#241E1B] border border-[#EBE6DD] dark:border-[#3D322B] text-xs font-bold text-[#5C4F48] dark:text-[#A39489]"
+                className="flex-1 py-3 rounded-xl bg-[#FAF8F5] dark:bg-[#241E1B] border border-[#EBE6DD] dark:border-[#3D322B] text-xs font-bold text-[#5C4F48] dark:text-[#A39489] min-h-[44px] cursor-pointer"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
-                className="flex-1 py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold flex items-center justify-center gap-2"
+                className="flex-1 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center justify-center gap-2 min-h-[44px] shadow-xs cursor-pointer"
               >
                 {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                 <span>Eliminar</span>
@@ -1331,6 +1586,60 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
         </div>
       )}
+
+      {/* FIXED MOBILE BOTTOM NAVIGATION BAR */}
+      <nav
+        aria-label="Navegación móvil del panel"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#241E1B]/95 backdrop-blur-md border-t border-[#EBE6DD] dark:border-[#3D322B] px-3 py-2 shadow-lg transition-colors duration-300"
+      >
+        <div className="grid grid-cols-3 gap-1 max-w-md mx-auto">
+          {/* Tab 1: Products */}
+          <button
+            onClick={() => setActiveTab('products')}
+            className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all cursor-pointer relative min-h-[48px] ${
+              activeTab === 'products'
+                ? 'text-[#4B5A36] dark:text-[#809761] font-bold bg-[#4B5A36]/10 dark:bg-[#809761]/15'
+                : 'text-[#7C6E65] dark:text-[#A39489] hover:text-[#2C221E] dark:hover:text-[#F4EFEA]'
+            }`}
+          >
+            <div className="relative">
+              <Package className="w-5 h-5" />
+              {lowStockProducts.length > 0 && (
+                <span className="absolute -top-1 -right-2 w-4 h-4 bg-amber-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-xs">
+                  {lowStockProducts.length}
+                </span>
+              )}
+            </div>
+            <span className="text-[11px] mt-1 tracking-tight">Productos</span>
+          </button>
+
+          {/* Tab 2: Analytics */}
+          <button
+            onClick={() => setActiveTab('analytics')}
+            className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all cursor-pointer relative min-h-[48px] ${
+              activeTab === 'analytics'
+                ? 'text-[#4B5A36] dark:text-[#809761] font-bold bg-[#4B5A36]/10 dark:bg-[#809761]/15'
+                : 'text-[#7C6E65] dark:text-[#A39489] hover:text-[#2C221E] dark:hover:text-[#F4EFEA]'
+            }`}
+          >
+            <BarChart3 className="w-5 h-5" />
+            <span className="text-[11px] mt-1 tracking-tight">Analíticas</span>
+          </button>
+
+          {/* Tab 3: Settings */}
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all cursor-pointer relative min-h-[48px] ${
+              activeTab === 'settings'
+                ? 'text-[#4B5A36] dark:text-[#809761] font-bold bg-[#4B5A36]/10 dark:bg-[#809761]/15'
+                : 'text-[#7C6E65] dark:text-[#A39489] hover:text-[#2C221E] dark:hover:text-[#F4EFEA]'
+            }`}
+          >
+            <Settings className="w-5 h-5" />
+            <span className="text-[11px] mt-1 tracking-tight">Ajustes</span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 };
