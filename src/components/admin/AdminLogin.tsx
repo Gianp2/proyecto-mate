@@ -41,24 +41,25 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onReturn
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] dark:bg-[#181412] text-[#2C221E] dark:text-[#F4EFEA] flex flex-col justify-center items-center p-4 transition-colors duration-300">
-      <div className="w-full max-w-md">
+    <div className="h-screen w-screen max-w-full overflow-hidden bg-[#FAF8F5] dark:bg-[#181412] text-[#2C221E] dark:text-[#F4EFEA] flex flex-col justify-center items-center p-4 transition-colors duration-300 select-none">
+      <div className="w-full max-w-md max-h-full flex flex-col justify-center">
         {/* Return Button */}
         <button
+          type="button"
           onClick={onReturnToStore}
-          className="inline-flex items-center gap-2 text-xs font-semibold text-[#7C6E65] dark:text-[#A39489] hover:text-[#2C221E] dark:hover:text-[#F4EFEA] mb-6 transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[#7C6E65] dark:text-[#A39489] hover:text-[#2C221E] dark:hover:text-[#F4EFEA] mb-4 transition-colors cursor-pointer self-start"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Volver a la tienda</span>
         </button>
 
         {/* Form Card */}
-        <div className="bg-white dark:bg-[#241E1B] rounded-3xl p-6 sm:p-8 border border-[#EBE6DD] dark:border-[#3D322B] shadow-xl space-y-6">
-          <div className="text-center space-y-2">
-            <div className="w-12 h-12 rounded-2xl bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] flex items-center justify-center mx-auto shadow-sm">
-              <ShieldCheck className="w-6 h-6" />
+        <div className="bg-white dark:bg-[#241E1B] rounded-3xl p-6 sm:p-7 border border-[#EBE6DD] dark:border-[#3D322B] shadow-xl space-y-5">
+          <div className="text-center space-y-1.5">
+            <div className="w-11 h-11 rounded-2xl bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] flex items-center justify-center mx-auto shadow-sm">
+              <ShieldCheck className="w-5 h-5" />
             </div>
-            <h1 className="font-serif-title text-2xl font-bold text-[#2C221E] dark:text-[#F4EFEA]">
+            <h1 className="font-serif-title text-xl sm:text-2xl font-bold text-[#2C221E] dark:text-[#F4EFEA]">
               Panel de Administración
             </h1>
             <p className="text-xs text-[#7C6E65] dark:text-[#A39489]">
@@ -67,15 +68,15 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onReturn
           </div>
 
           {error && (
-            <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-800 dark:text-rose-300 text-xs flex items-center gap-2.5">
+            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-800 dark:text-rose-300 text-xs flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 dark:text-rose-400" />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             <div>
-              <label className="block text-xs font-semibold text-[#2C221E] dark:text-[#F4EFEA] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-[#2C221E] dark:text-[#F4EFEA] uppercase tracking-wider mb-1">
                 Usuario
               </label>
               <div className="relative">
@@ -85,14 +86,14 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onReturn
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="admin"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#FAF8F5] dark:bg-[#1E1A17] border border-[#EBE6DD] dark:border-[#3D322B] text-sm text-[#2C221E] dark:text-[#F4EFEA] focus:outline-none focus:border-[#4B5A36] dark:focus:border-[#809761] transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#1E1A17] border border-[#EBE6DD] dark:border-[#3D322B] text-sm text-[#2C221E] dark:text-[#F4EFEA] focus:outline-none focus:border-[#4B5A36] dark:focus:border-[#809761] transition-all"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#2C221E] dark:text-[#F4EFEA] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-[#2C221E] dark:text-[#F4EFEA] uppercase tracking-wider mb-1">
                 Contraseña
               </label>
               <div className="relative">
@@ -102,7 +103,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onReturn
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-11 py-3 rounded-xl bg-[#FAF8F5] dark:bg-[#1E1A17] border border-[#EBE6DD] dark:border-[#3D322B] text-sm text-[#2C221E] dark:text-[#F4EFEA] focus:outline-none focus:border-[#4B5A36] dark:focus:border-[#809761] transition-all"
+                  className="w-full pl-10 pr-11 py-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#1E1A17] border border-[#EBE6DD] dark:border-[#3D322B] text-sm text-[#2C221E] dark:text-[#F4EFEA] focus:outline-none focus:border-[#4B5A36] dark:focus:border-[#809761] transition-all"
                   required
                 />
                 <button
@@ -117,16 +118,16 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onReturn
             </div>
 
             {/* Quick Fill Credentials Banner */}
-            <div className="p-3 rounded-xl bg-[#FAF8F5] dark:bg-[#1E1A17] border border-[#EBE6DD] dark:border-[#3D322B] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="p-2.5 rounded-xl bg-[#FAF8F5] dark:bg-[#1E1A17] border border-[#EBE6DD] dark:border-[#3D322B] text-xs flex items-center justify-between gap-2">
               <div className="text-[11px] text-[#7C6E65] dark:text-[#A39489]">
                 <span>Usuario: <strong className="text-[#2C221E] dark:text-[#F4EFEA]">mates@admin.com</strong></span>
-                <span className="mx-1.5">·</span>
+                <span className="mx-1">·</span>
                 <span>Clave: <strong className="text-[#2C221E] dark:text-[#F4EFEA]">admin123</strong></span>
               </div>
               <button
                 type="button"
                 onClick={() => handleFillCredentials('mates@admin.com', 'admin123')}
-                className="px-2.5 py-1 rounded-lg bg-[#4B5A36]/10 dark:bg-[#809761]/20 text-[#4B5A36] dark:text-[#809761] hover:bg-[#4B5A36]/20 font-bold text-[10px] inline-flex items-center gap-1 self-start sm:self-auto cursor-pointer transition-colors"
+                className="px-2 py-1 rounded-lg bg-[#4B5A36]/10 dark:bg-[#809761]/20 text-[#4B5A36] dark:text-[#809761] hover:bg-[#4B5A36]/20 font-bold text-[10px] inline-flex items-center gap-1 shrink-0 cursor-pointer transition-colors"
               >
                 <KeyRound className="w-3 h-3" />
                 <span>Autocompletar</span>
@@ -136,7 +137,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onReturn
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-[#4B5A36] hover:bg-[#3A4729] dark:bg-[#809761] dark:hover:bg-[#6b824e] text-white dark:text-[#181412] font-semibold py-3.5 px-6 rounded-xl shadow-md transition-all active:scale-98 disabled:opacity-70 cursor-pointer text-sm min-h-[44px]"
+              className="w-full flex items-center justify-center gap-2 bg-[#4B5A36] hover:bg-[#3A4729] dark:bg-[#809761] dark:hover:bg-[#6b824e] text-white dark:text-[#181412] font-semibold py-3 px-6 rounded-xl shadow-md transition-all active:scale-98 disabled:opacity-70 cursor-pointer text-sm min-h-[44px]"
             >
               {loading ? (
                 <>

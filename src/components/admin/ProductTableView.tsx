@@ -413,7 +413,8 @@ export const ProductTableView: React.FC<ProductTableViewProps> = ({
                             type="button"
                             onClick={() => onQuickStockChange(p, -1)}
                             disabled={p.stockQuantity === 0}
-                            className="w-6 h-6 rounded-lg bg-white dark:bg-[#28211D] hover:bg-[#EFECE6] text-[#2C221E] dark:text-[#F4EFEA] font-bold text-xs flex items-center justify-center disabled:opacity-30 cursor-pointer"
+                            className="w-8 h-8 rounded-lg bg-white dark:bg-[#28211D] hover:bg-[#EFECE6] text-[#2C221E] dark:text-[#F4EFEA] font-bold text-xs flex items-center justify-center disabled:opacity-30 cursor-pointer"
+                            aria-label="Restar una unidad de stock"
                           >
                             -
                           </button>
@@ -423,7 +424,8 @@ export const ProductTableView: React.FC<ProductTableViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onQuickStockChange(p, 1)}
-                            className="w-6 h-6 rounded-lg bg-white dark:bg-[#28211D] hover:bg-[#EFECE6] text-[#2C221E] dark:text-[#F4EFEA] font-bold text-xs flex items-center justify-center cursor-pointer"
+                            className="w-8 h-8 rounded-lg bg-white dark:bg-[#28211D] hover:bg-[#EFECE6] text-[#2C221E] dark:text-[#F4EFEA] font-bold text-xs flex items-center justify-center cursor-pointer"
+                            aria-label="Sumar una unidad de stock"
                           >
                             +
                           </button>
@@ -451,8 +453,9 @@ export const ProductTableView: React.FC<ProductTableViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onEdit(p)}
-                            className="p-2 rounded-xl text-[#7C6E65] hover:text-[#4B5A36] hover:bg-[#FAF8F5] dark:hover:bg-[#1E1A17] transition-colors cursor-pointer"
+                            className="w-11 h-11 flex items-center justify-center rounded-xl text-[#7C6E65] hover:text-[#4B5A36] hover:bg-[#FAF8F5] dark:hover:bg-[#1E1A17] transition-colors cursor-pointer"
                             title="Editar"
+                            aria-label="Editar producto"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
@@ -460,8 +463,9 @@ export const ProductTableView: React.FC<ProductTableViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onToggleActive(p)}
-                            className="p-2 rounded-xl text-[#7C6E65] hover:text-[#2C221E] hover:bg-[#FAF8F5] dark:hover:bg-[#1E1A17] transition-colors cursor-pointer"
+                            className="w-11 h-11 flex items-center justify-center rounded-xl text-[#7C6E65] hover:text-[#2C221E] hover:bg-[#FAF8F5] dark:hover:bg-[#1E1A17] transition-colors cursor-pointer"
                             title={p.active ? 'Desactivar' : 'Activar'}
+                            aria-label={p.active ? 'Ocultar producto' : 'Activar producto'}
                           >
                             {p.active ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4 text-rose-500" />}
                           </button>
@@ -469,8 +473,9 @@ export const ProductTableView: React.FC<ProductTableViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onDelete(p.id, p.name)}
-                            className="p-2 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                            className="w-11 h-11 flex items-center justify-center rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                             title="Eliminar"
+                            aria-label="Eliminar producto"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

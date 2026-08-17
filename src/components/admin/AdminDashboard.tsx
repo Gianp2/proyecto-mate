@@ -296,62 +296,80 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] dark:bg-[#181412] text-[#2C221E] dark:text-[#F4EFEA] flex flex-col md:flex-row transition-colors duration-300">
+    <div className="fixed inset-0 w-screen h-screen max-w-full max-h-screen overflow-hidden bg-[#FAF8F5] dark:bg-[#181412] text-[#2C221E] dark:text-[#F4EFEA] flex flex-col md:flex-row transition-colors duration-300 select-none">
       {/* Mobile Sticky Top Header */}
-      <div className="md:hidden sticky top-0 z-30 bg-white/95 dark:bg-[#241E1B]/95 backdrop-blur-md border-b border-[#EBE6DD] dark:border-[#3D322B] px-4 py-3 flex items-center justify-between shadow-2xs">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] flex items-center justify-center font-serif-title font-bold text-sm shadow-xs">
+      <header className="md:hidden shrink-0 z-30 bg-white/95 dark:bg-[#241E1B]/95 backdrop-blur-md border-b border-[#EBE6DD] dark:border-[#3D322B] px-4 py-3 flex items-center justify-between shadow-2xs">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] flex items-center justify-center font-serif-title font-bold text-base shadow-xs">
             P
           </div>
           <div>
-            <span className="font-serif-title font-bold text-sm text-[#2C221E] dark:text-[#F4EFEA] block leading-none">
-              PAMPA ADMIN
+            <div className="flex items-center gap-2">
+              <span className="font-serif-title font-bold text-sm text-[#2C221E] dark:text-[#F4EFEA] block leading-none">
+                PAMPA
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-[#4B5A36]/10 dark:bg-[#809761]/20 text-[#4B5A36] dark:text-[#809761]">
+                Admin
+              </span>
+            </div>
+            <span className="text-[10px] text-[#7C6E65] dark:text-[#A39489] font-medium mt-0.5 block">
+              {activeTab === 'products' ? 'Catálogo de Productos' : activeTab === 'analytics' ? 'Métricas en Vivo' : 'Ajustes del Negocio'}
             </span>
-            <span className="text-[10px] text-[#7C6E65] dark:text-[#A39489] font-medium">Panel de Control</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <button
+            type="button"
             onClick={handleToggleDark}
-            className="p-2 rounded-xl text-[#7C6E65] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622] transition-colors cursor-pointer"
+            className="w-11 h-11 rounded-2xl flex items-center justify-center text-[#7C6E65] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622] transition-colors cursor-pointer border border-transparent hover:border-[#EBE6DD] dark:hover:border-[#3D322B]"
             title="Cambiar tema"
+            aria-label="Cambiar tema"
           >
-            {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#4B5A36]" />}
+            {isDarkMode ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-[#4B5A36]" />}
           </button>
 
           <button
+            type="button"
             onClick={onReturnToStore}
-            className="p-2 rounded-xl text-[#7C6E65] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622] transition-colors cursor-pointer"
+            className="w-11 h-11 rounded-2xl flex items-center justify-center text-[#7C6E65] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622] transition-colors cursor-pointer border border-transparent hover:border-[#EBE6DD] dark:hover:border-[#3D322B]"
             title="Ver tienda"
+            aria-label="Ver tienda pública"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-5 h-5" />
           </button>
 
           <button
+            type="button"
             onClick={handleLogout}
-            className="p-2 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+            className="w-11 h-11 rounded-2xl flex items-center justify-center text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer border border-transparent hover:border-rose-200 dark:hover:border-rose-900/50"
             title="Cerrar sesión"
+            aria-label="Cerrar sesión"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-5 h-5" />
           </button>
         </div>
-      </div>
+      </header>
 
       {/* Desktop Sidebar Navigation */}
-      <aside className="hidden md:flex w-64 bg-white dark:bg-[#241E1B] border-r border-[#EBE6DD] dark:border-[#3D322B] shrink-0 p-5 flex-col justify-between transition-colors duration-300">
+      <aside className="hidden md:flex w-72 bg-white dark:bg-[#241E1B] border-r border-[#EBE6DD] dark:border-[#3D322B] shrink-0 p-5 flex-col justify-between transition-colors duration-300 h-full overflow-y-auto">
         <div className="space-y-6">
           {/* Brand Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-[#EBE6DD] dark:border-[#3D322B]">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] flex items-center justify-center font-serif-title font-bold text-lg shadow-sm">
+          <div className="flex items-center justify-between pb-5 border-b border-[#EBE6DD] dark:border-[#3D322B]">
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] flex items-center justify-center font-serif-title font-bold text-xl shadow-md">
                 P
               </div>
               <div>
-                <span className="font-serif-title font-bold text-base text-[#2C221E] dark:text-[#F4EFEA] block leading-none">
-                  PAMPA ADMIN
-                </span>
-                <span className="text-[10px] text-[#7C6E65] dark:text-[#A39489] font-medium">
+                <div className="flex items-center gap-2">
+                  <span className="font-serif-title font-bold text-base text-[#2C221E] dark:text-[#F4EFEA] block leading-none">
+                    PAMPA
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-[#4B5A36]/10 dark:bg-[#809761]/20 text-[#4B5A36] dark:text-[#809761]">
+                    Admin
+                  </span>
+                </div>
+                <span className="text-xs text-[#7C6E65] dark:text-[#A39489] font-medium mt-1 block">
                   {settings?.brandName || 'Emprendimiento'}
                 </span>
               </div>
@@ -359,56 +377,71 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex flex-col gap-1.5">
+          <nav className="flex flex-col gap-2" aria-label="Navegación lateral de administración">
             <button
+              type="button"
               onClick={() => setActiveTab('products')}
-              className={`flex items-center justify-between w-full px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
+              className={`flex items-center justify-between w-full px-4 py-3.5 min-h-[50px] rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'products'
-                  ? 'bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] shadow-xs font-bold'
-                  : 'text-[#5C4F48] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622]'
+                  ? 'bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] shadow-sm font-bold scale-[1.02]'
+                  : 'text-[#5C4F48] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622] hover:text-[#2C221E] dark:hover:text-[#F4EFEA]'
               }`}
             >
-              <div className="flex items-center gap-2.5">
-                <Package className="w-4 h-4" />
-                <span>Productos ({products.length})</span>
+              <div className="flex items-center gap-3">
+                <Package className="w-5 h-5" />
+                <span>Productos</span>
               </div>
-              {lowStockProducts.length > 0 && (
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono inline-flex items-center gap-1 ${
-                    activeTab === 'products'
-                      ? 'bg-amber-400 text-amber-950'
-                      : 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
-                  }`}
-                  title={`${lowStockProducts.length} productos con stock crítico`}
-                >
-                  <AlertTriangle className="w-3 h-3 shrink-0" />
-                  <span>{lowStockProducts.length}</span>
+              <div className="flex items-center gap-1.5">
+                <span className={`px-2 py-0.5 rounded-full text-xs font-bold font-mono ${
+                  activeTab === 'products' ? 'bg-white/20 text-white dark:text-[#181412]' : 'bg-[#FAF8F5] dark:bg-[#1E1A17] text-[#7C6E65] dark:text-[#A39489]'
+                }`}>
+                  {products.length}
                 </span>
-              )}
+                {lowStockProducts.length > 0 && (
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold font-mono inline-flex items-center gap-1 ${
+                      activeTab === 'products'
+                        ? 'bg-amber-400 text-amber-950'
+                        : 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
+                    }`}
+                    title={`${lowStockProducts.length} productos con stock crítico`}
+                  >
+                    <AlertTriangle className="w-3 h-3 shrink-0" />
+                    <span>{lowStockProducts.length}</span>
+                  </span>
+                )}
+              </div>
             </button>
 
             <button
+              type="button"
               onClick={() => setActiveTab('analytics')}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
+              className={`flex items-center justify-between w-full px-4 py-3.5 min-h-[50px] rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'analytics'
-                  ? 'bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] shadow-xs font-bold'
-                  : 'text-[#5C4F48] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622]'
+                  ? 'bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] shadow-sm font-bold scale-[1.02]'
+                  : 'text-[#5C4F48] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622] hover:text-[#2C221E] dark:hover:text-[#F4EFEA]'
               }`}
             >
-              <BarChart3 className="w-4 h-4" />
-              <span>Analíticas Real-time</span>
+              <div className="flex items-center gap-3">
+                <BarChart3 className="w-5 h-5" />
+                <span>Analíticas Real-time</span>
+              </div>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Datos en vivo" />
             </button>
 
             <button
+              type="button"
               onClick={() => setActiveTab('settings')}
-              className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
+              className={`flex items-center justify-between w-full px-4 py-3.5 min-h-[50px] rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'settings'
-                  ? 'bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] shadow-xs font-bold'
-                  : 'text-[#5C4F48] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622]'
+                  ? 'bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] shadow-sm font-bold scale-[1.02]'
+                  : 'text-[#5C4F48] dark:text-[#A39489] hover:bg-[#FAF8F5] dark:hover:bg-[#2E2622] hover:text-[#2C221E] dark:hover:text-[#F4EFEA]'
               }`}
             >
-              <Settings className="w-4 h-4" />
-              <span>Configuración</span>
+              <div className="flex items-center gap-3">
+                <Settings className="w-5 h-5" />
+                <span>Configuración</span>
+              </div>
             </button>
           </nav>
         </div>
@@ -416,29 +449,32 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {/* Sidebar Footer Controls */}
         <div className="pt-4 border-t border-[#EBE6DD] dark:border-[#3D322B] space-y-2">
           <button
+            type="button"
             onClick={handleToggleDark}
-            className="w-full flex items-center justify-between bg-[#FAF8F5] dark:bg-[#1E1A17] hover:bg-[#EFECE6] dark:hover:bg-[#2A231F] text-[#2C221E] dark:text-[#F4EFEA] border border-[#EBE6DD] dark:border-[#3D322B] font-semibold text-xs py-2.5 px-3 rounded-xl transition-all cursor-pointer"
+            className="w-full flex items-center justify-between bg-[#FAF8F5] dark:bg-[#1E1A17] hover:bg-[#EFECE6] dark:hover:bg-[#2A231F] text-[#2C221E] dark:text-[#F4EFEA] border border-[#EBE6DD] dark:border-[#3D322B] font-semibold text-xs min-h-[46px] px-3.5 rounded-2xl transition-all cursor-pointer shadow-2xs"
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#4B5A36]" />}
-              <span>{isDarkMode ? 'Modo Claro' : 'Modo Oscuro'}</span>
+              <span>{isDarkMode ? 'Tema Claro' : 'Tema Oscuro'}</span>
             </div>
-            <span className="text-[10px] uppercase font-bold text-[#7C6E65] dark:text-[#A39489]">
+            <span className="text-[10px] uppercase font-bold text-[#7C6E65] dark:text-[#A39489] bg-white dark:bg-[#28211D] px-2 py-0.5 rounded-lg border border-[#EBE6DD] dark:border-[#3D322B]">
               {isDarkMode ? 'Oscuro' : 'Claro'}
             </span>
           </button>
 
           <button
+            type="button"
             onClick={onReturnToStore}
-            className="w-full flex items-center justify-center gap-2 bg-[#FAF8F5] dark:bg-[#1E1A17] hover:bg-[#EFECE6] dark:hover:bg-[#2A231F] text-[#2C221E] dark:text-[#F4EFEA] font-semibold text-xs py-2.5 px-3 rounded-xl transition-all cursor-pointer border border-[#EBE6DD] dark:border-[#3D322B]"
+            className="w-full flex items-center justify-center gap-2.5 bg-[#FAF8F5] dark:bg-[#1E1A17] hover:bg-[#EFECE6] dark:hover:bg-[#2A231F] text-[#2C221E] dark:text-[#F4EFEA] font-semibold text-xs min-h-[46px] px-3.5 rounded-2xl transition-all cursor-pointer border border-[#EBE6DD] dark:border-[#3D322B] shadow-2xs"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Ver tienda pública</span>
+            <span>Volver a la Tienda</span>
           </button>
 
           <button
+            type="button"
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-semibold text-xs py-2.5 px-3 rounded-xl transition-all cursor-pointer"
+            className="w-full flex items-center justify-center gap-2.5 text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-semibold text-xs min-h-[46px] px-3.5 rounded-2xl transition-all cursor-pointer border border-transparent hover:border-rose-200 dark:hover:border-rose-900/50"
           >
             <LogOut className="w-4 h-4" />
             <span>Cerrar sesión</span>
@@ -446,8 +482,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 p-3.5 sm:p-6 lg:p-8 pb-24 md:pb-8 overflow-y-auto">
+      {/* Main Scrollable Content Area within fixed viewport */}
+      <main className="flex-1 p-3.5 sm:p-6 lg:p-8 pb-28 md:pb-8 overflow-y-auto overflow-x-hidden min-w-0">
         {/* TAB 1: PRODUCTS MANAGEMENT */}
         {activeTab === 'products' && (
           <div className="space-y-5">
@@ -734,21 +770,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {/* Fixed Mobile Bottom Navigation Toolbar */}
       <nav
         aria-label="Navegación móvil del panel"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#241E1B]/95 backdrop-blur-lg border-t border-[#EBE6DD] dark:border-[#3D322B] px-3 py-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-2xl transition-colors duration-300"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#241E1B]/95 backdrop-blur-xl border-t border-[#EBE6DD] dark:border-[#3D322B] px-3 py-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-2xl transition-colors duration-300"
       >
-        <div className="grid grid-cols-4 gap-1.5 max-w-lg mx-auto items-center">
+        <div className="grid grid-cols-4 gap-2 max-w-md mx-auto items-center">
           <button
+            type="button"
             onClick={() => setActiveTab('products')}
-            className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all cursor-pointer relative min-h-[50px] ${
+            className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all cursor-pointer relative min-h-[52px] ${
               activeTab === 'products'
-                ? 'text-[#4B5A36] dark:text-[#809761] font-bold bg-[#4B5A36]/10 dark:bg-[#809761]/15'
+                ? 'text-[#4B5A36] dark:text-[#809761] font-bold bg-[#4B5A36]/10 dark:bg-[#809761]/15 shadow-2xs scale-105'
                 : 'text-[#7C6E65] dark:text-[#A39489] hover:text-[#2C221E] dark:hover:text-[#F4EFEA]'
             }`}
           >
             <div className="relative">
               <Package className="w-5 h-5" />
               {lowStockProducts.length > 0 && (
-                <span className="absolute -top-1.5 -right-2.5 px-1 py-0.2 bg-amber-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-xs">
+                <span className="absolute -top-1.5 -right-2 px-1 py-0.2 bg-amber-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-xs">
                   {lowStockProducts.length}
                 </span>
               )}
@@ -757,8 +794,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </button>
 
           <button
+            type="button"
             onClick={() => handleOpenProductModal()}
-            className="flex flex-col items-center justify-center py-2 px-1 rounded-2xl bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] font-bold transition-all shadow-xs cursor-pointer min-h-[50px] active:scale-95"
+            className="flex flex-col items-center justify-center py-2 px-1 rounded-2xl bg-[#4B5A36] dark:bg-[#809761] text-white dark:text-[#181412] font-bold transition-all shadow-md cursor-pointer min-h-[52px] active:scale-95 hover:brightness-110"
             title="Crear nuevo producto"
           >
             <Plus className="w-5 h-5" />
@@ -766,22 +804,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </button>
 
           <button
+            type="button"
             onClick={() => setActiveTab('analytics')}
-            className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all cursor-pointer relative min-h-[50px] ${
+            className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all cursor-pointer relative min-h-[52px] ${
               activeTab === 'analytics'
-                ? 'text-[#4B5A36] dark:text-[#809761] font-bold bg-[#4B5A36]/10 dark:bg-[#809761]/15'
+                ? 'text-[#4B5A36] dark:text-[#809761] font-bold bg-[#4B5A36]/10 dark:bg-[#809761]/15 shadow-2xs scale-105'
                 : 'text-[#7C6E65] dark:text-[#A39489] hover:text-[#2C221E] dark:hover:text-[#F4EFEA]'
             }`}
           >
             <BarChart3 className="w-5 h-5" />
-            <span className="text-[11px] mt-1 tracking-tight">Analíticas</span>
+            <span className="text-[11px] mt-1 tracking-tight">Métricas</span>
           </button>
 
           <button
+            type="button"
             onClick={() => setActiveTab('settings')}
-            className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all cursor-pointer relative min-h-[50px] ${
+            className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all cursor-pointer relative min-h-[52px] ${
               activeTab === 'settings'
-                ? 'text-[#4B5A36] dark:text-[#809761] font-bold bg-[#4B5A36]/10 dark:bg-[#809761]/15'
+                ? 'text-[#4B5A36] dark:text-[#809761] font-bold bg-[#4B5A36]/10 dark:bg-[#809761]/15 shadow-2xs scale-105'
                 : 'text-[#7C6E65] dark:text-[#A39489] hover:text-[#2C221E] dark:hover:text-[#F4EFEA]'
             }`}
           >

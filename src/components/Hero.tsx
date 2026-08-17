@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { MessageCircle, ArrowRight, ChevronDown } from 'lucide-react';
+import { MessageCircle, ArrowDown, ChevronDown } from 'lucide-react';
 import { StoreSettings } from '../types';
 import { buildWhatsAppUrl } from '../services/api';
 
@@ -51,7 +51,7 @@ export const Hero: React.FC<HeroProps> = ({ settings, onExploreCatalog }) => {
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-[#4B5A36] dark:bg-[#809761] hover:bg-[#3A4729] dark:hover:bg-[#96AD76] text-white font-semibold px-8 py-4 rounded-full transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer active:scale-95 text-base"
           >
             <span>Explorar catálogo</span>
-            <ArrowRight className="w-5 h-5" />
+            <ArrowDown className="w-5 h-5" />
           </button>
 
           <a
