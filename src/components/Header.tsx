@@ -176,6 +176,7 @@ export const Header: React.FC<HeaderProps> = ({
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
+            key="mobile-nav-panel"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

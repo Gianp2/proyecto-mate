@@ -207,28 +207,35 @@ export const Catalog: React.FC<CatalogProps> = ({ products, settings, onSelectPr
             ))}
           </motion.div>
         ) : (
-        /* Empty Search State */
-        <div className="text-center py-16 px-4 bg-white dark:bg-[#241E1B] rounded-3xl border border-[#EBE6DD] dark:border-[#3D322B] max-w-md mx-auto my-8">
-          <div className="w-12 h-12 rounded-full bg-[#EFECE6] dark:bg-[#2E2622] text-[#7C6E65] dark:text-[#BAACA2] flex items-center justify-center mx-auto mb-3">
-            <Search className="w-6 h-6" />
-          </div>
-          <h3 className="font-serif-title font-bold text-lg text-[#2C221E] dark:text-[#F4EFEA] mb-1">
-            No encontramos productos
-          </h3>
-          <p className="text-sm text-[#7C6E65] dark:text-[#BAACA2] mb-4">
-            No hay resultados que coincidan con &quot;{searchQuery}&quot; en la categoría {selectedCategory}.
-          </p>
-          <button
-            onClick={() => {
-              setSearchQuery('');
-              setSelectedCategory('Todos');
-            }}
-            className="bg-[#4B5A36] dark:bg-[#809761] text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-[#3A4729] dark:hover:bg-[#96AD76] transition-all cursor-pointer"
+          /* Empty Search State */
+          <motion.div
+            key="empty-state"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="text-center py-16 px-4 bg-white dark:bg-[#241E1B] rounded-3xl border border-[#EBE6DD] dark:border-[#3D322B] max-w-md mx-auto my-8"
           >
-            Ver todos los productos
-          </button>
-        </div>
-      )}
+            <div className="w-12 h-12 rounded-full bg-[#EFECE6] dark:bg-[#2E2622] text-[#7C6E65] dark:text-[#BAACA2] flex items-center justify-center mx-auto mb-3">
+              <Search className="w-6 h-6" />
+            </div>
+            <h3 className="font-serif-title font-bold text-lg text-[#2C221E] dark:text-[#F4EFEA] mb-1">
+              No encontramos productos
+            </h3>
+            <p className="text-sm text-[#7C6E65] dark:text-[#BAACA2] mb-4">
+              No hay resultados que coincidan con &quot;{searchQuery}&quot; en la categoría {selectedCategory}.
+            </p>
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('Todos');
+              }}
+              className="bg-[#4B5A36] dark:bg-[#809761] text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-[#3A4729] dark:hover:bg-[#96AD76] transition-all cursor-pointer"
+            >
+              Ver todos los productos
+            </button>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {/* Pagination Control Bar */}

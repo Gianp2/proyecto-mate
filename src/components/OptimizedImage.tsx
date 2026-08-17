@@ -22,13 +22,17 @@ export function getWebpSource(url: string, width?: number, quality: number = 80)
   
   // Unsplash Optimization
   if (url.includes('images.unsplash.com')) {
-    const urlObj = new URL(url);
-    urlObj.searchParams.set('fm', 'webp');
-    urlObj.searchParams.set('q', quality.toString());
-    if (width) {
-      urlObj.searchParams.set('w', width.toString());
+    try {
+      const urlObj = new URL(url);
+      urlObj.searchParams.set('fm', 'webp');
+      urlObj.searchParams.set('q', quality.toString());
+      if (width) {
+        urlObj.searchParams.set('w', width.toString());
+      }
+      return urlObj.toString();
+    } catch {
+      return url;
     }
-    return urlObj.toString();
   }
 
   return url;

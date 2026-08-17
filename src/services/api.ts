@@ -506,3 +506,101 @@ export function buildWhatsAppUrl(
 
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
 }
+
+// Upload image to Cloudinary (cloud name: dam2bx2ab)
+export interface CloudinaryUploadResponse {
+  url: string;
+  publicId?: string;
+  format?: string;
+  provider?: string;
+  warning?: string;
+}
+
+export async function uploadImageToCloudinary(
+  fileOrBase64: File | string,
+  folder: string = 'pampa_catalog',
+  uploadPreset?: string
+): Promise<CloudinaryUploadResponse> {
+  const token = getAdminToken();
+
+  // Convert File to base64 if needed
+  let base64Data: string;
+  if (typeof fileOrBase64 === 'string') {
+    base64Data = fileOrBase64;
+  } else {
+    base64Data = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(fileOrBase64);
+    });
+  }
+
+  // 1. Try server-side upload route (which has CLOUDINARY_URL / keys)
+  try {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ image: base64Data, folder, uploadPreset }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.url) {
+        return {
+          url: data.url,
+          publicId: data.publicId,
+          format: data.format,
+          provider: data.provider || 'cloudinary',
+        };
+      }
+    } else {
+      const err = await res.json().catch(() => ({}));
+      console.warn('Server upload endpoint response:', err);
+    }
+  } catch (e) {
+    console.warn('Server upload endpoint unreachable, falling back to direct Cloudinary client upload...', e);
+  }
+
+  // 2. Client-side direct upload to Cloudinary (dam2bx2ab) if preset available
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dam2bx2ab';
+  const activePreset = uploadPreset || import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+  if (activePreset) {
+    try {
+      const formData = new FormData();
+      formData.append('file', base64Data);
+      formData.append('upload_preset', activePreset);
+      formData.append('folder', folder);
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.secure_url) {
+          return {
+            url: data.secure_url,
+            publicId: data.public_id,
+            format: data.format,
+            provider: 'cloudinary_client_direct',
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('Client direct Cloudinary upload failed:', e);
+    }
+  }
+
+  // 3. Resilient fallback: Return direct image base64/URL so creation/editing never blocks
+  return {
+    url: base64Data,
+    provider: 'local_base64',
+    warning: 'Imagen guardada directamente. Para sincronización Cloudinary, configurá CLOUDINARY_URL en tus variables de entorno.',
+  };
+}

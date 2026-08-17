@@ -102,11 +102,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, settings, o
   const allImages = [product.image, ...(product.secondaryImages || [])];
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
+    <div
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -116,10 +112,11 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, settings, o
     >
       {/* Modal Window Container */}
       <motion.div
+        key="product-modal-card"
         initial={{ opacity: 0, scale: 0.94, y: 30 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.94, y: 30 }}
-        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
         onClick={(e) => e.stopPropagation()}
         className="relative bg-[#FAF8F5] dark:bg-[#1A1614] rounded-3xl shadow-2xl border border-[#EBE6DD] dark:border-[#3D322B] w-full max-w-3xl overflow-hidden z-10 max-h-[90vh] flex flex-col my-auto"
       >
@@ -269,6 +266,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, settings, o
             </div>
           </div>
         </motion.div>
-    </motion.div>
+    </div>
   );
 };
